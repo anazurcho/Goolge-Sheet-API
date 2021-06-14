@@ -21,9 +21,11 @@ file_id = '1zFJ_fy3biT_DVgjQ87Yo5mBn82QGcJjENEGWkahyqZU'
 
 def create_credentials():
     creds = None
+    # creds = token_anzu
     if os.path.exists(TOKEN_FILE):
         with open(TOKEN_FILE, 'rb') as token:
             creds = pickle.load(token)
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -65,9 +67,10 @@ class GoogleAPI:
             f.write(fh.read())
             f.close()
 
-    def get_values(self, spreadsheet_id, range_name):
+    def get_values(self, spreadsheet_id, range_name, sheet_name):
         service = self.sheet_service
         # [START sheets_get_values]
+        range_name = f"'{sheet_name}'!{range_name}"
         result = service.spreadsheets().values().get(
             spreadsheetId=spreadsheet_id, range=range_name).execute()
         rows = result.get('values', [])
@@ -87,8 +90,6 @@ class GoogleAPI:
 
 if __name__ == "__main__":
     obj = GoogleAPI()
-    print(data.FILE_TYPES)
-    print(data.FILE_TYPES['pdf'])
     i = int(input("Enter your choice: 1 - create File. 2 - download File. 3- get data. 4 - get sheets. 5 - list of spreadsheet\n"))
     if i == 1:
         obj.create_spreadsheet()
@@ -99,9 +100,9 @@ if __name__ == "__main__":
         if o == 2:
             obj.download_spreadsheet(mime_type='xlsx')
     if i == 3:
-        obj.get_values(spreadsheet_id=file_id, range_name='A:Z')
+        obj.get_values(spreadsheet_id=file_id, range_name='A:Z', sheet_name="პირველი შითი")
     if i == 4:
-        obj.get_sheets(spreadsheet_id=file_id)
+        obj.get_sheets(spreadsheet_id='1hmixF7WFNrJFrdUxx9ZCOSa8khMRlUfCkckaijVnIiE')
     if i == 5:
         obj.list_spreadsheet_gspread()
     else:
